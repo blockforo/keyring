@@ -1,0 +1,67 @@
+name: Blockcert
+
+on: ["push", "pull_request"]
+jobs:
+  build:
+    # OS
+    # runs-on: ubuntu-latest
+    runs-on: self-hosted
+    
+    # Steps: sequence of tasks that will be executed as part of the job
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    
+    # setup Golang based on the go.mod version
+    - name: Setup Go
+      uses: actions/setup-go@v4
+      with:
+        go-version-file: go.mod
+
+    # Set the ldflags
+    - run: echo -n "-w -linkmode 'auto' -extldflags '-static'" > .ldflags
+
+    # Set the build timestamp
+    - run: echo -n " -X 'main.buildTimestamp=$(date --utc '+%FT%TZ')'" >> .ldflags
+
+    # Set the build git hash
+    - run: echo -n " -X 'main.gitSHA=${{ github.sha }}'" >> .ldflags
+
+    # Set the build ref type
+    - run: echo -n " -X 'main.refType=${{ github.ref_type }}'" >> .ldflags
+
+    # Set the build ref name
+    - run: echo -n " -X 'main.refName=${{ github.ref_name }}'" >> .ldflags
+
+    # Make sure the go mod is tidy
+    - run: go mod tidy && git diff --exit-code
+
+    # Make sure the code is formatted
+    - run: test -z $(gofmt -l .) || gofmt -d .
+
+    # Makre sure we go vet
+    - name: Run vet
+      run: go vet ./...
+
+    # run go ci lint to catch standard go issues
+    - name: golangci-lint
+      uses: golangci/golangci-lint-action@v3
+      with:
+        args: --issues-exit-code=0
+        skip-pkg-cache: true
+        skip-build-cache: true
+      
+    - name: WriteGoList for Nancy
+      run: go list -json -deps > go.list
+        
+    # Run testing on the code
+    - name: Run testing
+      run: go test -cover -ldflags "$(cat .ldflags)" ./...
+
+    # Run build of the application
+    - name: Run build whole project
+      run: go build -ldflags "$(cat .ldflags)" -v ./...
+
+    # Build the code now
+    - name: Run build
+      run: go build -ldflags "$(cat .ldflags)"
