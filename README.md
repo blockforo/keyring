@@ -1,5 +1,7 @@
 #### Status
 
+[![Blockcert](https://github.com/blockforo/keyring/actions/workflows/build.yaml/badge.svg)](https://github.com/blockforo/keyring/actions/workflows/build.yaml)
+
 - Needs Go 1.21
 
 #### Keyring
