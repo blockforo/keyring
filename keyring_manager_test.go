@@ -22,7 +22,7 @@ func TestKeyringAddWithPermissions(t *testing.T) {
 	service := NewManager()
 
 	// New user keyring
-	kr, err := service.UserKeyring(keyringName)
+	kr, err := service.SessionKeyring(keyringName)
 	assert.Nil(t, err)
 
 	// Create a key
