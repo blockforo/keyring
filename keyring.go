@@ -52,7 +52,7 @@ func (kr *keyRing) SetKeyPermissions(name string, user, group, others KeyPerm) e
 }
 
 // Set the permissions of the keyring
-func (kr *keyRing) SetPermissions(name string, user, group, others KeyPerm) error {
+func (kr *keyRing) SetPermissions(user, group, others KeyPerm) error {
 	permissions := buildPermissions(PermAll.Uint32(), user.Uint32(), group.Uint32(), others.Uint32())
 	return setPermissions(kr.Id(), permissions.Uint32())
 }

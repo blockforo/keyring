@@ -37,7 +37,7 @@ type Keyring interface {
 	SetKeyPermissions(name string, user, group, others KeyPerm) error
 
 	// Set the keyring permissions
-	SetPermissions(name string, user, group, others KeyPerm) error
+	SetPermissions(user, group, others KeyPerm) error
 
 	// Gets a key from the key ring, via its name
 	GetKey(name string) (Key, error)
