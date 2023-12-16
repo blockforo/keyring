@@ -1,4 +1,4 @@
-name: Blockcert
+name: Keyring
 
 on: ["push", "pull_request"]
 jobs:
